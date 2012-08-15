@@ -1,7 +1,7 @@
 /**
 Dummy Class System (DCS)
 
-Copyright (c) 2012 Jorge Ramírez <jorgeramirez1990@gmail.com>. 
+Copyright (c) 2012 Jorge Ramírez <jorgeramirez1990 at gmail.com>. 
 
 DCS is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -49,37 +49,37 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
             name: name,
             get: "get" + capitalize,
             set: "set" + capitalize
-        }
+        };
         return map;
-    }
+    };
 
     /**
      * @private
      **/
     generateGetter =  function(nameMap) {
-        return function() { return this[nameMap.name]; } 
-    }
+        return function() { return this[nameMap.name]; }; 
+    };
 
     /**
      * @private
      **/
     generateSetter = function(nameMap) {
-        return function(value) { this[nameMap.name] = value; }
-    }
+        return function(value) { this[nameMap.name] = value; };
+    };
 
     /**
      * @private
      * Generate methods for members of property object
      **/
     generateMembers = function(prototype, property) {
-        var capitalize, map;
+        var name, map;
 
         for(name in property){
             map = generateNameMap(name);
             prototype[map.get] = generateGetter(map);
             prototype[map.set] = generateSetter(map);
         }
-    }
+    };
 
     /**
      * Defines a new Class
@@ -88,7 +88,8 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
      * @param {Object} config
      **/ 
     DCS.define = function(className, config) {
-        var prototype, propertyCfg, constructor;
+        var prototype, propertyCfg, parent,
+            parentProto, initializing = false;
         
         parent = !!config.extend ? DCS.ClassManager.get(config.extend) : Class;
         parentProto = parent.prototype;
@@ -99,19 +100,22 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
        
         // Instantiate a base class (do not run the constructor). 
         // From http://ejohn.org/blog/simple-javascript-inheritance/
-        initializing = true
+        initializing = true;
         prototype = new parent();
         initializing = false;
-
-        for(propName in config){
+        
+        
+        for(var propName in config){
             if(typeof config[propName] === "function" &&
                typeof prototype[propName] === "function"){
                 // Overriden method
                 prototype[propName] = (function(name, fn) {
                     return function() {
                         this._super = parentProto[name];
-                        return fn.apply(this, arguments);
-                    }
+                        var result = fn.apply(this, arguments);
+                        delete this._super;
+                        return result;
+                    };
                 }(propName, config[propName]));
             }else{
                 prototype[propName] = config[propName];
@@ -130,9 +134,10 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
         }
 
         newClass.prototype = prototype;
+
         // Register it with the ClassManager
         DCS.ClassManager.register(className, newClass);
-    }
+    };
 }(DCS || {}, window));
 /**
  * DCS.ClassManager
@@ -168,7 +173,7 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
          **/
         register: function(name, klass) {
             if(!!this.maps.nameToClass[name]){
-                console.log("Warning: [DCS.ClassManager] Overriding a existing class");
+                console.log("Warning: [DCS.ClassManager] Overriding an existing class");
             }
             this.maps.nameToClass[name] = window[name] = klass;
         }

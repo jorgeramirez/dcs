@@ -3,7 +3,8 @@ module('Class');
 DCS.define('Person', {
     property: {
         name: '',
-        lastname: ''
+        lastname: '',
+        age: 0
     },
 
     constructor: function(name, lastname) {
@@ -39,25 +40,29 @@ var w1 = new Worker('John', 'Doe', 'CEO');
 
 
 test('basic class definition', function() {
-    ok(p1, 'Person instance defined');
-    equal(p1.name, 'foo', 'defined property exists');
-    equal(p1.lastname, 'bar', 'defined property exists');
+    ok(p1, 'Instance defined');
+    ok(p1.name !== undefined && p1.lastname !== undefined && 
+       p1.age !== undefined, 'Instance variables defined correctly');
+    ok(p1.name == 'foo' && p1.lastname == 'bar', 
+       'Instance variables values correctly set');
+    ok(p1.age === 0, 'Default value correctly set');
 });
 
-test('define method', function() {
+test('defined methods', function() {
     equal(p1.toString(), 'Name: foo Lastname: bar', 'toString method works');
 });
 
 test('getters/setters generation', function() {
-    ok(p1.getName && p1.getLastname, 'getters generated correctly');
-    ok(p1.setName && p1.setLastname, 'setters generated correctly');
-    ok(p1.getName() == 'foo' && p1.getLastname() == 'bar', 'getters worked');
+    ok(p1.getName && p1.getLastname && p1.getAge, 'Getters generated correctly');
+    ok(p1.setName && p1.setLastname && p1.setAge, 'Setters generated correctly');
+    ok(p1.getName() == 'foo' && p1.getLastname() == 'bar', 'Getters worked');
     p1.setName('bar');
     p1.setLastname('foo');
-    ok(p1.getName() == 'bar' && p1.getLastname() == 'foo', 'setters worked');
+    ok(p1.getName() == 'bar' && p1.getLastname() == 'foo', 'Setters worked');
 });
 
 test('inheritance', function() {
-    ok(w1.getName && w1.getLastname && w1.setName && w1.setLastname, 'methods inherited correctly');    
-    equal(w1.toString(), 'Name: John Lastname: Doe Job Title: CEO', 'overriden method works');
+    ok(w1.getName && w1.getLastname && w1.setName && 
+       w1.setLastname && w1.getAge && w1.setAge, 'Methods inherited correctly');    
+    equal(w1.toString(), 'Name: John Lastname: Doe Job Title: CEO', 'Overriden method works');
 });

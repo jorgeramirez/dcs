@@ -25,6 +25,8 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
  * @author Jorge Ramírez <jorgeramirez1990@gmail.com>
  **/
 (function(DCS, window) {
+    "use strict";
+    
     var Class,
         define, generateMembers,
         generateNameMap, generateGetter, 
@@ -69,7 +71,8 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
 
     /**
      * @private
-     * Generate methods for members of property object
+     * Generate methods for members of property object. Also
+     * establish default values for instance variables.
      **/
     generateMembers = function(prototype, property) {
         var name, map;
@@ -78,6 +81,8 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
             map = generateNameMap(name);
             prototype[map.get] = generateGetter(map);
             prototype[map.set] = generateSetter(map);
+            // establish default values for instance variables
+            prototype[map.name] = property[map.name];
         }
     };
 
@@ -94,16 +99,15 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
         parent = !!config.extend ? DCS.ClassManager.get(config.extend) : Class;
         parentProto = parent.prototype;
         propertyCfg = config.property || {};
-
-        delete config.extend;
-        delete config.property;
        
         // Instantiate a base class (do not run the constructor). 
         // From http://ejohn.org/blog/simple-javascript-inheritance/
         initializing = true;
         prototype = new parent();
         initializing = false;
-        
+      
+        delete config.extend;
+        delete config.property;
         
         for(var propName in config){
             if(typeof config[propName] === "function" &&
@@ -145,6 +149,8 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
  * @author Jorge Ramírez <jorgeramirez1990@gmail.com>
  **/
 (function(DCS, window) {
+    "use strict";
+    
     var Manager;
 
     DCS.ClassManager = Manager = {
@@ -173,9 +179,9 @@ along with DCS.  If not, see <http ://www.gnu.org/licenses/>.
          **/
         register: function(name, klass) {
             if(!!this.maps.nameToClass[name]){
-                console.log("Warning: [DCS.ClassManager] Overriding an existing class");
+                window.console.log("Warning: [DCS.ClassManager] Overriding an existing class");
             }
             this.maps.nameToClass[name] = window[name] = klass;
         }
-    }
+    };
 }(DCS || {}, window));

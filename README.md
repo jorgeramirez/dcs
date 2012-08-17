@@ -31,7 +31,7 @@ and you can create an instance of this class by doing
     var p1 = new Person('foo', 'bar');
 
 The config object (the second parameter of the `DCS.define` method) contains the 
-methods or properties that will be part of the new class prototype, except for
+methods and properties that will be part of the new class prototype, except for
 the _property_ config object that you can use to specify default values for instance 
 variables. The _property_ config also tells DCS to generate getters/setters 
 for each instance variable specified in this object.
